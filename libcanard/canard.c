@@ -761,6 +761,8 @@ CANARD_PRIVATE void rxInitTransferMetadataFromFrame(const RxFrameModel* const   
     out_transfer->transfer_kind  = frame->transfer_kind;
     out_transfer->port_id        = frame->port_id;
     out_transfer->remote_node_id = frame->source_node_id;
+    out_transfer->source_node_id = frame->source_node_id;
+    out_transfer->destination_node_id = frame->destination_node_id;
     out_transfer->transfer_id    = frame->transfer_id;
 }
 
@@ -1144,7 +1146,13 @@ struct CanardInstance canardInit(const struct CanardMemoryResource memory)
     const struct CanardInstance out = {
         .user_reference   = NULL,
         .node_id          = CANARD_NODE_ID_UNSET,
+<<<<<<< HEAD
         .memory           = memory,
+=======
+        .forward_range    = {CANARD_NODE_ID_UNSET, CANARD_NODE_ID_UNSET},
+        .memory_allocate  = memory_allocate,
+        .memory_free      = memory_free,
+>>>>>>> 05f4ac7 (extend subscription filter criteria with forwarding range that accepts everything within range)
         .rx_subscriptions = {NULL, NULL, NULL},
     };
     return out;
@@ -1338,7 +1346,7 @@ int8_t canardRxAccept(struct CanardInstance* const        ins,
         RxFrameModel model = {0};
         if (rxTryParseFrame(timestamp_usec, frame, &model))
         {
-            if ((CANARD_NODE_ID_UNSET == model.destination_node_id) || (ins->node_id == model.destination_node_id))
+            if ((CANARD_NODE_ID_UNSET == model.destination_node_id) || (ins->node_id == model.destination_node_id) || (model.destination_node_id >= ins->forward_range.start_id && model.destination_node_id < ins->forward_range.end_id))
             {
                 // This is the reason the function has a logarithmic time complexity of the number of subscriptions.
                 // Note also that this one of the two variable-complexity operations in the RX pipeline; the other one
