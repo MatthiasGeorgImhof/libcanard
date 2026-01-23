@@ -215,6 +215,8 @@ typedef struct
     /// For incoming non-anonymous transfers this is the node-ID of the origin.
     /// For incoming anonymous transfers the value is reported as CANARD_NODE_ID_UNSET.
     CanardNodeID remote_node_id;
+    CanardNodeID source_node_id;
+    CanardNodeID destination_node_id;
 
     /// When responding to a service request, the response transfer SHALL have the same transfer-ID value as the
     /// request because the client will match the response with the request based on that.
@@ -355,6 +357,13 @@ typedef void* (*CanardMemoryAllocate)(CanardInstance* ins, size_t amount);
 ///     - The execution time should be constant (O(1)).
 typedef void (*CanardMemoryFree)(CanardInstance* ins, void* pointer);
 
+struct CanardForwardRange
+{
+    CanardNodeID start_id;
+    CanardNodeID end_id;
+};
+typedef struct CanardForwardRange CanardForwardRange;
+
 /// This is the core structure that keeps all of the states and allocated resources of the library instance.
 struct CanardInstance
 {
@@ -367,7 +376,8 @@ struct CanardInstance
     /// Per the Cyphal Specification, the node-ID should not be assigned more than once.
     /// Invalid values are treated as CANARD_NODE_ID_UNSET. The default value is CANARD_NODE_ID_UNSET.
     CanardNodeID node_id;
-
+    CanardForwardRange forward_range;
+    
     /// Dynamic memory management callbacks. See their type documentation for details.
     /// They SHALL be valid function pointers at all times.
     /// The time complexity models given in the API documentation are made on the assumption that the memory management
