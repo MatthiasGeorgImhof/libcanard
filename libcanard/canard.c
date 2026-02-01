@@ -923,7 +923,7 @@ CANARD_PRIVATE int8_t rxAcceptFrame(CanardInstance* const       ins,
     CANARD_ASSERT(frame != NULL);
     CANARD_ASSERT(frame->payload != NULL);
     CANARD_ASSERT(frame->transfer_id <= CANARD_TRANSFER_ID_MAX);
-    CANARD_ASSERT((CANARD_NODE_ID_UNSET == frame->destination_node_id) || (ins->node_id == frame->destination_node_id));
+    CANARD_ASSERT((CANARD_NODE_ID_UNSET == frame->destination_node_id) || (ins->node_id == frame->destination_node_id) || (frame->destination_node_id >= ins->forward_start_id && frame->destination_node_id < ins->forward_end_id));
     CANARD_ASSERT(out_transfer != NULL);
 
     int8_t out = 0;
@@ -1032,7 +1032,8 @@ CanardInstance canardInit(const CanardMemoryAllocate memory_allocate, const Cana
     const CanardInstance out = {
         .user_reference   = NULL,
         .node_id          = CANARD_NODE_ID_UNSET,
-        .forward_range    = {CANARD_NODE_ID_UNSET, CANARD_NODE_ID_UNSET},
+        .forward_start_id = CANARD_NODE_ID_UNSET,
+        .forward_end_id   = CANARD_NODE_ID_UNSET,
         .memory_allocate  = memory_allocate,
         .memory_free      = memory_free,
         .rx_subscriptions = {NULL, NULL, NULL},
@@ -1144,7 +1145,7 @@ int8_t canardRxAccept(CanardInstance* const        ins,
         RxFrameModel model = {0};
         if (rxTryParseFrame(timestamp_usec, frame, &model))
         {
-            if ((CANARD_NODE_ID_UNSET == model.destination_node_id) || (ins->node_id == model.destination_node_id) || (model.destination_node_id >= ins->forward_range.start_id && model.destination_node_id < ins->forward_range.end_id))
+            if ((CANARD_NODE_ID_UNSET == model.destination_node_id) || (ins->node_id == model.destination_node_id) || (model.destination_node_id >= ins->forward_start_id && model.destination_node_id < ins->forward_end_id))
             {
                 // This is the reason the function has a logarithmic time complexity of the number of subscriptions.
                 // Note also that this one of the two variable-complexity operations in the RX pipeline; the other one
