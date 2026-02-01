@@ -440,13 +440,6 @@ struct CanardRxTransfer
     struct CanardMutablePayload payload;
 };
 
-struct CanardForwardRange
-{
-    CanardNodeID start_id;
-    CanardNodeID end_id;
-};
-typedef struct CanardForwardRange CanardForwardRange;
-
 /// This is the core structure that keeps all of the states and allocated resources of the library instance.
 struct CanardInstance
 {
@@ -459,8 +452,9 @@ struct CanardInstance
     /// Per the Cyphal Specification, the node-ID should not be assigned more than once.
     /// Invalid values are treated as CANARD_NODE_ID_UNSET. The default value is CANARD_NODE_ID_UNSET.
     CanardNodeID node_id;
-    CanardForwardRange forward_range;
-    
+    CanardNodeID forward_start_id;
+    CanardNodeID forward_end_id;
+        
     /// Dynamic memory management callbacks. See their type documentation for details.
     /// They SHALL be valid function pointers at all times.
     /// The time complexity models given in the API documentation are made on the assumption that the memory management
