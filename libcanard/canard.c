@@ -1146,18 +1146,10 @@ struct CanardInstance canardInit(const struct CanardMemoryResource memory)
     const struct CanardInstance out = {
         .user_reference   = NULL,
         .node_id          = CANARD_NODE_ID_UNSET,
-<<<<<<< HEAD
-<<<<<<< HEAD
         .memory           = memory,
-=======
         .forward_range    = {CANARD_NODE_ID_UNSET, CANARD_NODE_ID_UNSET},
-=======
         .forward_start_id = CANARD_NODE_ID_UNSET,
         .forward_end_id   = CANARD_NODE_ID_UNSET,
->>>>>>> 5c59c16 (added TestCanardModification to sanity check forwarding)
-        .memory_allocate  = memory_allocate,
-        .memory_free      = memory_free,
->>>>>>> 05f4ac7 (extend subscription filter criteria with forwarding range that accepts everything within range)
         .rx_subscriptions = {NULL, NULL, NULL},
     };
     return out;
